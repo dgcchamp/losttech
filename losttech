@@ -1,0 +1,163 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Structure to represent a lost and found item
+struct Item {
+    char name[50];
+    char securityQuestion[100];
+    char securityAnswer[30];
+    char category[30];
+};
+
+// Structure to represent a user
+struct User {
+    char username[30];
+    char password[30];
+    int isLoggedIn; // To track whether the user is logged in or not
+};
+
+// Function to add a new item to the list
+void addItem(struct Item items[], int *itemCount) {
+    if (*itemCount < 100) {  // Assuming a maximum of 100 items
+        printf("Enter item name: ");
+        scanf("%s", items[*itemCount].name);
+
+        printf("Enter security question: ");
+        scanf(" %[^\n]s", items[*itemCount].securityQuestion);  // Read the whole line, including spaces
+
+        printf("Enter security answer: ");
+        scanf("%s", items[*itemCount].securityAnswer);
+
+        printf("Enter item category: ");
+        scanf("%s", items[*itemCount].category);
+
+        (*itemCount)++;
+        printf("Item added successfully!\n");
+    } else {
+        printf("Maximum item limit reached.\n");
+    }
+}
+
+// Function to display all items
+void displayItems(struct Item items[], int itemCount) {
+    if (itemCount > 0) {
+        printf("\nLost and Found Items:\n");
+        for (int i = 0; i < itemCount; i++) {
+            printf("Name: %s, Security Question: %s, Category: %s\n", items[i].name, items[i].securityQuestion, items[i].category);
+        }
+    } else {
+        printf("No items found.\n");
+    }
+}
+
+// Function to search for items based on category
+void searchByCategory(struct Item items[], int itemCount) {
+    char searchCategory[30];
+    printf("Enter the category to search: ");
+    scanf("%s", searchCategory);
+
+    int found = 0;
+    for (int i = 0; i < itemCount; i++) {
+        if (strcmp(items[i].category, searchCategory) == 0) {
+            printf("Name: %s, Security Question: %s, Category: %s\n", items[i].name, items[i].securityQuestion, items[i].category);
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        printf("No items found in the specified category.\n");
+    }
+}
+
+// Function to handle user sign-up
+void signUp(struct User *user) {
+    printf("Sign Up:\n");
+    printf("Enter your username: ");
+    scanf("%s", user->username);
+
+    printf("Enter your password: ");
+    scanf("%s", user->password);
+
+    user->isLoggedIn = 1; // Automatically log in after sign-up
+    printf("Sign-up successful!\n");
+}
+
+// Function to handle user login
+void login(struct User *user) {
+    char username[30];
+    char password[30];
+
+    printf("Login:\n");
+    printf("Enter your username: ");
+    scanf("%s", username);
+
+    printf("Enter your password: ");
+    scanf("%s", password);
+
+    if (strcmp(user->username, username) == 0 && strcmp(user->password, password) == 0) {
+        user->isLoggedIn = 1;
+        printf("Login successful!\n");
+    } else {
+        printf("Login failed. Incorrect username or password.\n");
+    }
+}
+
+int main() {
+    struct Item lostAndFoundItems[100];  // Assuming a maximum of 100 items
+    int itemCount = 0;
+    int choice;
+
+    struct User user;
+    user.isLoggedIn = 0; // Initially not logged in
+
+    do {
+        printf("\nLost and Found Menu:\n");
+        printf("1. Sign Up\n");
+        printf("2. Login\n");
+        printf("3. Add Item\n");
+        printf("4. Display All Items\n");
+        printf("5. Search by Category\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                if (!user.isLoggedIn) {
+                    signUp(&user);
+                } else {
+                    printf("You are already logged in.\n");
+                }
+                break;
+            case 2:
+                if (!user.isLoggedIn) {
+                    login(&user);
+                } else {
+                    printf("You are already logged in.\n");
+                }
+                break;
+            case 3:
+                if (user.isLoggedIn) {
+                    addItem(lostAndFoundItems, &itemCount);
+                } else {
+                    printf("Please log in first.\n");
+                }
+                break;
+            case 4:
+                displayItems(lostAndFoundItems, itemCount);
+                break;
+            case 5:
+                searchByCategory(lostAndFoundItems, itemCount);
+                break;
+            case 6:
+                printf("Exiting the program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+
+    } while (choice != 6);
+
+    return 0;
+}
